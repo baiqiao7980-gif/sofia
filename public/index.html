@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服平台 - 登录</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            font-size: 60px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .toggle-form {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-form:hover {
+            color: #764ba2;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #c33;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3c3;
+        }
+
+        .admin-hint {
+            background: #f0f8ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #0066cc;
+        }
+
+        .admin-hint strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container animate__animated animate__fadeInUp">
+        <div class="logo">
+            <i class="fas fa-headset"></i>
+            <h1>客服平台</h1>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="success-message" class="success-message" style="display: none;"></div>
+
+        <!-- 登录表单 -->
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-username">用户名</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="login-username" class="form-control" placeholder="请输入用户名" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">密码</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" class="form-control" placeholder="请输入密码" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="login-btn">
+                <span class="btn-text">登录</span>
+                <span class="loading" style="display: none;"></span>
+            </button>
+
+            <p>还没有账户？ <a href="#" class="toggle-form" onclick="toggleForm('register')">立即注册</a></p>
+        </form>
+
+        <!-- 注册表单 -->
+        <form id="register-form" style="display: none;">
+            <div class="form-group">
+                <label for="register-username">用户名</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="register-username" class="form-control" placeholder="请输入用户名" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="register-password">密码</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="register-password" class="form-control" placeholder="密码至少6位" required minlength="6">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">确认密码</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirm-password" class="form-control" placeholder="请再次输入密码" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="register-btn">
+                <span class="btn-text">注册</span>
+                <span class="loading" style="display: none;"></span>
+            </button>
+
+            <p>已有账户？ <a href="#" class="toggle-form" onclick="toggleForm('login')">立即登录</a></p>
+        </form>
+
+        <div class="admin-hint">
+            <strong>管理员登录</strong>
+            用户名: admin<br>
+            密码: admin123
+        </div>
+    </div>
+
+    <script>
+        // 切换登录/注册表单
+        function toggleForm(type) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            
+            if (type === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            }
+            
+            clearMessages();
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        // 清除消息
+        function clearMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // 设置按钮加载状态
+        function setButtonLoading(buttonId, loading) {
+            const button = document.getElementById(buttonId);
+            const btnText = button.querySelector('.btn-text');
+            const loadingSpinner = button.querySelector('.loading');
+            
+            if (loading) {
+                btnText.style.display = 'none';
+                loadingSpinner.style.display = 'inline-block';
+                button.disabled = true;
+            } else {
+                btnText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+                button.disabled = false;
+            }
+        }
+
+        // 登录处理
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+            
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!username || !password) {
+                showError('请填写完整信息');
+                return;
+            }
+            
+            setButtonLoading('login-btn', true);
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showSuccess('登录成功，正在跳转...');
+                    
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = '/admin.html';
+                        } else {
+                            window.location.href = '/chat.html';
+                        }
+                    }, 1000);
+                } else {
+                    showError(data.error || '登录失败');
+                }
+            } catch (error) {
+                showError('网络错误，请稍后重试');
+            } finally {
+                setButtonLoading('login-btn', false);
+            }
+        });
+
+        // 注册处理
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+            
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!username || !password || !confirmPassword) {
+                showError('请填写完整信息');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('两次输入的密码不一致');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('密码长度至少6位');
+                return;
+            }
+            
+            setButtonLoading('register-btn', true);
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showSuccess('注册成功，正在跳转...');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/chat.html';
+                    }, 1000);
+                } else {
+                    showError(data.error || '注册失败');
+                }
+            } catch (error) {
+                showError('网络错误，请稍后重试');
+            } finally {
+                setButtonLoading('register-btn', false);
+            }
+        });
+
+        // 检查是否已登录
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                const userData = JSON.parse(user);
+                if (userData.role === 'admin') {
+                    window.location.href = '/admin.html';
+                } else {
+                    window.location.href = '/chat.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
